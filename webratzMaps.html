@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Serif+Pro" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Kreon" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Gochi+Hand" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Coustard|Days+One" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Caveat+Brush" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Istok+Web" rel="stylesheet">
+</head>
+<body>
+  <div class="topbar">
+    <span style="font-size:20px;cursor:pointer; font-family:'Kreon'" onclick="openNav()" class="menu">&#9776;Date Range</span>
+    <script>
+    function openNav() {
+      document.getElementById("mySidenav").style.width = "250px";
+
+    }
+
+    function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+    }
+    </script>
+    <div class="logo">
+      <span></span>
+      <h2>WebRatz MAPS</h2>
+    </div>
+    <div class="login">
+
+      <div class="userLogin" id="userLogin">
+        <p>
+          <label class="formLabels">Email</label>
+          <input type="email" id="email" required>
+        </p>
+        <p>
+          <label class="formLabels">Password</label>
+          <input type="password" id="password" required>
+        </p>
+        <p>
+          <button class="formButton" id="login">Login</button>
+        </p>
+        <p>
+          <button class="formButton" id="logout">Logout</button>
+        </p>
+        <p>
+          <button class="formButton" id="register">Register</button>
+        </p>
+      </div>
+    </div>
+
+  </div>
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()" class="menu">&times;</a>
+    <a href="list.html">Rat List</a>
+    <a href="newReport.html">New Report</a>
+    <a href="webratzMaps.html">Map</a>
+    <a href="ratCharts.html">Charts</a>
+    <div class="dateInput">
+
+      <input type="date" name="begDate" value="" id="begDate">
+      <p style="color:white">Beginning Date</p>
+      <input type="date" name="endDate" value="" id="endDate">
+      <p style="color:white">End Date</p>
+      <button type="button" name="button" id="dateSubmit">Submit</button>
+    </div>
+  </div>
+
+  <div id="map"></div>
+  <script src="https://www.gstatic.com/firebasejs/4.5.2/firebase.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="main.js">
+
+  </script>
+    <script type="text/javascript">
+    var map;
+
+      var locations = [];
+      function initMap() {
+        var middle = {lat: 40.83017836, lng: -73.87573865};
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 10,
+          center: middle
+        });
+        // var marker = new google.maps.Marker({
+        //   position: middle,
+        //   map: map
+        // });
+        var endDate = new Date(2017, 3, 19, 0, 0, 0, 0);
+        var begDate = new Date(2017, 3, 19, 0, 0, 0, 0);
+        //console.log(endDate.getMonth());
+
+        firebase.database().ref().child("Data").on("value", function(snapshot) {
+          snapshot.forEach(function(yes) {
+            var latitude = yes.child("Latitude").val();
+            var longitude = yes.child("Longitude").val();
+            //console.log(yes.child("Created Date").val());
+            var date = yes.child("Created Date").val().split("/");
+            date[2] = date[2].substring(0, 4);
+            date = new Date(parseInt(date[2]), parseInt(date[0]), parseInt(date[1]), 0, 0, 0, 0);
+            if ((date.getTime() >= begDate.getTime()) && (date.getTime() <= endDate.getTime())) {
+              //console.log(date.getYear());
+              //console.log("pos = " + (date.getTime() - endDate.getTime()));
+              if (latitude != 0 && longitude != 0 && longitude != null && latitude != null) {
+                var latlng = new google.maps.LatLng(latitude, longitude);
+                var holder = new google.maps.Marker({
+                  position: latlng,
+                  map: map,
+                  title: "reee"
+                });
+                var infowindow = new google.maps.InfoWindow({
+                  content: "" + yes.child("City").val() + '\n'
+                              + yes.child("Incident Address").val() + "\n"
+                              + yes.child("Incident Zip").val() + "\n"
+                              + yes.child("Created Date").val() + "\n"
+                });
+                holder.addListener('mouseover', function() {
+                  infowindow.open(map, holder);
+                });
+                holder.addListener('mouseout', function() {
+                  infowindow.close(map, holder);
+                })
+                locations.push(holder);
+
+              }
+            }
+            //console.log(latitude);
+            //console.log(longitude);
+          });
+        });
+
+
+
+      }
+      function setMapOnAll(map) {
+        for (var i = 0; i < locations.length; i++) {
+          locations[i].setMap(map);
+        }
+      }
+
+      // Removes the markers from the map, but keeps them in the array.
+      function clearMarkers() {
+        setMapOnAll(null);
+      }
+      function deleteMarkers() {
+          clearMarkers();
+          locations = [];
+      }
+      function reloadMap(date1, date2) {
+        deleteMarkers();
+        var dateHolder = date1.split("-");
+        var begDate = new Date(parseInt(dateHolder[0]), parseInt(dateHolder[1]) - 1, parseInt(dateHolder[2]), 0, 0, 0, 0);
+        dateHolder = date2.split("-");
+        var endDate = new Date(parseInt(dateHolder[0]), parseInt(dateHolder[1]) - 1, parseInt(dateHolder[2]), 0, 0, 0, 0);
+        //console.log("yes");
+        firebase.database().ref().child("Data").on("value", function(snapshot) {
+          snapshot.forEach(function(yes) {
+            var latitude = yes.child("Latitude").val();
+            var longitude = yes.child("Longitude").val();
+            var date = yes.child("Created Date").val().split("/");
+            date[2] = date[2].substring(0, 4);
+            date = new Date(parseInt(date[2]), parseInt(date[0]), parseInt(date[1]), 0, 0, 0, 0);
+            if ((date.getTime() >= begDate.getTime()) && (date.getTime() <= endDate.getTime())) {
+              //console.log(date.getYear());
+              //console.log("pos = " + (date.getTime() - endDate.getTime()));
+              var latlng = new google.maps.LatLng(latitude, longitude);
+              if (latitude != 0 && longitude != 0 && longitude != null && latitude != null) {
+                locations.push(new google.maps.Marker({
+                  position: latlng,
+                  map: map
+                }));
+              }
+              //console.log("ohyeah");
+            }
+            //console.log(latitude);
+            //console.log(longitude);
+          });
+        });
+
+      }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDlNUfhz1hUQHNKull7U7UFFD-VNi9bnmk&callback=initMap">
+    </script>
+    <script>
+    $(document).ready(() => {
+      var height = $(".topbar").css("height")
+      $("#map").css("margin-top", "" + height);
+    });
+
+    $("#dateSubmit").on('click', e => {
+      console.log(getInputVal('begDate'));
+      reloadMap(getInputVal('begDate'), getInputVal('endDate'));
+    });
+
+    </script>
+
+</body>
+</html>

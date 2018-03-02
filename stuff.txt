@@ -1,0 +1,58 @@
+const config = {
+  apiKey: "AIzaSyD28glXreDOiRqyvjqi_04X38DTNNrgxtw",
+  authDomain: "web-application-9e17e.firebaseapp.com",
+  databaseURL: "https://web-application-9e17e.firebaseio.com",
+  projectId: "web-application-9e17e",
+  storageBucket: "web-application-9e17e.appspot.com",
+  messagingSenderId: "923554325193"
+};
+firebase.initializeApp(config);
+
+
+var onPage = false;
+var email = document.getElementById('email');
+var password = document.getElementById('password');
+const logoutBtn = document.getElementById('logout');
+const registerBtn = document.getElementById('register');
+const loginBtn = document.getElementById('login');
+
+loginBtn.addEventListener('click', e => {
+  const email = getInputVal('email');
+  const password = getInputVal('password');
+  const auth = firebase.auth();
+  const promise = auth.signInWithEmailAndPassword(email, password);
+
+  promise.catch(e => console.log(e.message));
+});
+
+registerBtn.addEventListener('click', e => {
+  //TODO: check for real email
+  const email = getInputVal('email');
+  const password = getInputVal('password');
+  const auth = firebase.auth();
+  const promise = auth.createUserWithEmailAndPassword(email, password);
+
+  promise.catch(e => console.log(e.message));
+});
+
+logoutBtn.addEventListener('click', e => {
+  firebase.auth().signOut();
+});
+
+firebase.auth().onAuthStateChanged(firebaseUser => {
+  if (firebaseUser) {
+    console.log(firebaseUser);
+    email.setAttribute("style", "display: none");
+    password.setAttribute("style", "display: none");
+    logoutBtn.setAttribute("style", "display: block");
+    loginBtn.setAttribute("style", "display: none");
+
+  } else {
+    console.log("not logged in");
+    email.setAttribute("style", "display: inline-block");
+    password.setAttribute("style", "display: inline-block");
+    logoutBtn.setAttribute("style", "display: none");
+    loginBtn.setAttribute("style", "display: block");
+    window.location = "index.html";
+  }
+});

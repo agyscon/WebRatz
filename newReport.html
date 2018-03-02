@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>New Rat Report</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Serif+Pro" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Kreon" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Gochi+Hand" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Coustard|Days+One" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Caveat+Brush" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Istok+Web" rel="stylesheet">
+</head>
+
+<body>
+  <div class="topbar">
+    <span style="font-size:30px;cursor:pointer" onclick="openNav()" class="menu">&#9776; open</span>
+    <script>
+      function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+      }
+
+      function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+      }
+    </script>
+    <div class="logo">
+      <span></span>
+      <h2>WebRatz</h2>
+    </div>
+    <div class="login">
+
+      <div class="userLogin" id="userLogin">
+        <p>
+          <label class="formLabels">Email</label>
+          <input type="email" id="email" required>
+        </p>
+        <p>
+          <label class="formLabels">Password</label>
+          <input type="password" id="password" required>
+        </p>
+        <p>
+          <button class="formButton" id="login">Login</button>
+        </p>
+        <p>
+          <button class="formButton" id="logout">Logout</button>
+        </p>
+        <p>
+          <button class="formButton" id="register">Register</button>
+        </p>
+      </div>
+    </div>
+
+  </div>
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="list.html">Rat List</a>
+    <a href="newReport.html">New Report</a>
+    <a href="webratzMaps.html">Map</a>
+    <a href="ratCharts.html">Charts</a>
+  </div>
+
+  <div id="particles">
+    <div class="infoField" id="infoField">
+      <p>Borough</p>
+      <div class="formElement">
+        <input type="text" id="borough">
+      </div>
+      <p>City</p>
+      <div class="formElement">
+        <input type="text" name="" value="" id="city">
+      </div>
+      <p>Incident address</p>
+      <div class="formElement">
+        <input type="text" name="" value="" id="incidentAddress">
+      </div>
+      <p>Incident Zip</p>
+      <div class="formElement">
+        <input type="text" id="incidentZip">
+      </div>
+      <p>Coordinates</p>
+      <div class="formElement">
+        <input type="text" name="" value="" id="longitude" placeholder="longitude" class="coordinates">
+        <input type="text" name="" value="" id="latitude" class="coordinates">
+      </div>
+      <p>Location Type</p>
+      <div class="formElement">
+        <input type="text" name="" value="" id="locationType">
+      </div>
+      <p>Date</p>
+      <div class="formElement">
+        <input type="date" name="" value="" id="dateInput">
+      </div>
+
+    </div>
+
+  </div>
+  <button type="button" name="button" id="submitButton">submit</button>
+
+</body>
+<script src="https://www.gstatic.com/firebasejs/4.5.2/firebase.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script src="main.js"></script>
+<script type="text/javascript">
+  $(document).ready(() => {
+    console.log("yehe");
+    var height = $(".topbar").css("height");
+    console.log(height);
+    $("#infoField").css("margin-top", "" + height);
+  });
+
+  function addRatReport(borough, city, createdDate, incidentAddress, incidentZip, longitude, latitude, locationType) {
+    firebase.database().ref().child("Data").push().set({
+      Borough: borough,
+      City: city,
+      'Created Date': createdDate,
+      'Incident Address': incidentZip,
+      'Incident Zip': incidentZip,
+      Latitude: latitude,
+      'Location Type': locationType,
+      Longitude: longitude
+    });
+    var ref = firebase.database().ref().child("Count");
+    ref.transaction(function(searches) {
+      if (searches) {
+        searches++;
+      }
+      return searches;
+    })
+
+    //firebase.database().ref().child("Count").update({Count:})
+
+  }
+
+  $("#submitButton").on('click', e => {
+    console.log("yah");
+    var dateString = getInputVal('dateInput');
+    if (dateString == "" || dateString == null) {
+      var dateObject = new Date();
+      dateString = (dateObject.getMonth()) + "/" + dateObject.getDate() + "/" + dateObject.getFullYear();
+    } else {
+      dateString = dateString.split("-")
+      dateString = (parseInt(dateString[1])) + "/" + dateString[2] + "/" + dateString[0];
+
+    }
+    console.log(dateString);
+    addRatReport(
+      getInputVal('borough'),
+      getInputVal('city'),
+      dateString,
+      getInputVal('incidentAddress'),
+      getInputVal('incidentZip'),
+      getInputVal('longitude'),
+      getInputVal('latitude'),
+      getInputVal('locationType'));
+  });
+</script>
+
+<script>
+  particlesJS.load('particles', 'particles.json', function() {
+    console.log('particles,json loaded');
+  });
+</script>
+
+</html>

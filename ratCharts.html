@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Source+Serif+Pro" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Kreon" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Gochi+Hand" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Coustard|Days+One" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Caveat+Brush" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Istok+Web" rel="stylesheet">
+  <title>Rat List</title>
+</head>
+
+<body>
+
+
+
+  <div id="info">
+    <div id="chart_div"></div>
+    <div id="bar_chart_div"></div>
+  </div>
+
+  <div class="topbar">
+    <span style="font-size:20px;cursor:pointer;font-family:'Kreon'" onclick="openNav()" class="menu">&#9776;Date Range</span>
+    <script>
+      function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+      }
+
+      function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+      }
+    </script>
+    <div class="logo">
+      <span></span>
+      <h2>WebRatz CHARTS</h2>
+    </div>
+    <div class="login">
+
+      <div class="userLogin" id="userLogin">
+        <p>
+          <label class="formLabels">Email</label>
+          <input type="email" id="email" required>
+        </p>
+        <p>
+          <label class="formLabels">Password</label>
+          <input type="password" id="password" required>
+        </p>
+        <p>
+          <button class="formButton" id="login">Login</button>
+        </p>
+        <p>
+          <button class="formButton" id="logout">Logout</button>
+        </p>
+        <p>
+          <button class="formButton" id="register">Register</button>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="list.html">Rat List</a>
+    <a href="newReport.html">New Report</a>
+    <a href="webratzMaps.html">Map</a>
+    <a href="ratCharts.html">Charts</a>
+    <div class="dateInput">
+      <input type="date" name="begDate" value="" id="begDate">
+      <p style="color:white">Beginning Date</p>
+      <input type="date" name="endDate" value="" id="endDate">
+      <p style="color:white">End Date</p>
+      <button type="button" name="button" id="dateSubmit">Submit</button>
+    </div>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/4.5.2/firebase.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="main.js"></script>
+  <script>
+
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(initialChart);
+    var limit;
+    var chart;
+    var yearRange;
+    var initialYear;
+    var finalYear;
+    var dateAggregate;
+    var monthTotals;
+    var barChart;
+    var totals;
+    function startChart() {
+      var arr = [];
+      arr.push(0);
+      arr.push(0);
+      arr.push(0);
+      arr[0] = 20;
+      arr[1] = 23;
+      arr[2] = 50;
+      console.log(arr);
+
+      // Create the data table.
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Topping');
+      data.addColumn('number', 'Slices');
+      data.addRows([
+        ['Mushrooms', 1],
+        ['Onions', 1],
+        ['Olives', 1],
+        ['Zucchini', 1],
+        ['Pepperoni', 2]
+      ]);
+
+      // Set chart options
+      var options = {'title':'How Much Pizza I Ate Last Night'
+                     };
+
+      // Instantiate and draw our chart, passing in some options.
+      chart.draw(data, options);
+    }
+
+    function initialChart() {
+      initialData(loadChart);
+    }
+
+    function initialData(callback) {
+      firebase.database().ref().on("value", function(snapshot) {
+        console.log(snapshot.child("Count").val());
+        limit = snapshot.child("Count").val();
+        //firebase.database().ref("Count").update({Count: newCount});
+        callback("2016-1-1", "2017-1-1", drawChart);
+      });
+
+    }
+    function loadChart(date1, date2, callback) {
+      testTotals = [];
+      var counter=0;
+      monthTotals = [];
+      totals = [];
+      yearRange = [];
+      dateAggregate = [];
+      var dateHolder = date1.split("-");
+      var begDate = new Date(parseInt(dateHolder[0]), parseInt(dateHolder[1]) - 1, parseInt(dateHolder[2]), 0, 0, 0, 0);
+      initialYear = parseInt(dateHolder[0]);
+      dateHolder = date2.split("-");
+      var endDate = new Date(parseInt(dateHolder[0]), parseInt(dateHolder[1]) - 1, parseInt(dateHolder[2]), 0, 0, 0, 0);
+      console.log(endDate);
+      finalYear = parseInt(dateHolder[0]);
+      for (i = 0; i <= (finalYear - initialYear); i++) {
+        yearRange.push(0);
+      }
+      firebase.database().ref("Data").on("value", function(snapshot) {
+        snapshot.forEach(function(data) {
+          counter++;
+          //console.log(counter);
+          var dateString = data.child("Created Date").val().split("/");
+          var endYear = parseInt(dateString[2]);
+          var date = new Date(parseInt(dateString[2]), parseInt(dateString[0]), parseInt(dateString[1]), 0, 0, 0, 0);
+          testTotals.push(date);
+          if ((date.getTime() >= begDate.getTime()) && (date.getTime() <= endDate.getTime())) {
+            yearRange[endYear - initialYear]++;
+            dateAggregate.push(date);
+          }
+          if (counter >= limit) {
+            if (!(dateAggregate[0] instanceof Date)) {
+              alert("Not a valid Date");
+            }
+            console.log(dateAggregate);
+            testTotals.sort(function(a,b){
+              // Turn your strings into dates, and then subtract them
+              // to get a value that is either negative, positive, or zero.
+              return (a.getTime() - b.getTime());
+            });
+            console.log(testTotals);
+            dateAggregate.sort(function(a,b){
+              // Turn your strings into dates, and then subtract them
+              // to get a value that is either negative, positive, or zero.
+              return (a.getTime() - b.getTime());
+            });
+            var datesByDay = [];
+            var day = [];
+            var datesByMonth = [];
+            var month = [];
+            var curDay = dateAggregate[0].getDate();
+            var curMonth = dateAggregate[0].getMonth();
+            var i = 0;
+            console.log(endDate);
+            console.log(endDate.getTime());
+            console.log(dateAggregate.length);
+            while (i < dateAggregate.length) {
+              if (dateAggregate[i].getDate() == curDay) {
+                day.push(dateAggregate[i]);
+              } else {
+                datesByDay.push(day);
+                day = [];
+                curDay = dateAggregate[i].getDate();
+                day.push(dateAggregate[i]);
+              }
+
+              if (dateAggregate[i].getMonth() == curMonth) {
+                month.push(dateAggregate[i]);
+              } else {
+                datesByMonth.push(month);
+                month = [];
+                curMonth = dateAggregate[i].getMonth();
+                month.push(dateAggregate[i]);
+              }
+              i++;
+            }
+            datesByDay.push(day);
+            day = [];
+            datesByMonth.push(month);
+            month=[];
+            console.log(datesByMonth);
+
+
+            var datesByYear = [];
+            //console.log(datesByMonth[0][0].getYear());
+            for (i = 0; i < datesByDay.length; i++) {
+              monthTotals.push([new Date(datesByDay[i][0].getFullYear(), datesByDay[i][0].getMonth(), datesByDay[i][0].getDate(), 0, 0 ,0, 0), datesByDay[i].length]);
+            }
+
+            for (i = 0; i < datesByMonth.length; i++) {
+              totals.push([new Date(datesByMonth[i][0].getFullYear(), datesByMonth[i][0].getMonth(), 1, 0, 0 ,0, 0), datesByMonth[i].length]);
+            }
+            //console.log(monthTotals);
+
+
+            //console.log(dateAggregate);
+            //console.log("yes");
+            drawChart();
+          }
+        });
+      });
+      console.log("done");
+    }
+    function drawChart() {
+      var barData = new google.visualization.DataTable();
+      var data = new google.visualization.DataTable();
+      data.addColumn('date', 'date');
+      data.addColumn('number', 'Number of Rats');
+      barData.addColumn('date', 'date');
+      barData.addColumn('number', 'Number of Rats');
+      //var yearCounter = initialYear;
+      for (i = 0; i < (monthTotals.length); i++) {
+        data.addRow([monthTotals[i][0], monthTotals[i][1]]);
+        //yearCounter++;
+      }
+      for (i = 0; i < (totals.length); i++) {
+        barData.addRow([totals[i][0], totals[i][1]]);
+        //yearCounter++;
+      }
+      console.log(totals);
+      var options = {'title':'Rats',
+                      animation: {
+                        duration: 1000,
+                        easing: 'out',
+                        }
+                      };
+      if (chart == null && barChart == null) {
+        barChart = new google.visualization.BarChart(document.getElementById('bar_chart_div'));
+        chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+      }
+      chart.draw(data, options);
+      barChart.draw(barData, options);
+      console.log(barData);
+    }
+
+    $(document).ready(() => {
+      console.log("yehe");
+      var height = $(".topbar").css("height");
+      console.log(height);
+      $("#info").css("margin-top", "" + height);
+    });
+    $("#dateSubmit").on('click', e => {
+      console.log(getInputVal('begDate'));
+      loadChart(getInputVal('begDate'),
+        getInputVal('endDate'), drawChart);
+    });
+  </script>
+</body>
+
+</html>

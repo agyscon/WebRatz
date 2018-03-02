@@ -1,0 +1,291 @@
+@import url('https://fonts.googleapis.com/css?family=Source+Serif+Pro');
+
+h1 {
+  font-family: 'Source Serif Pro', serif;
+
+  margin: auto;
+
+}
+
+
+body, html{
+  height: 100%;
+  width: 100%;
+  left: 0;
+  margin: 0;
+}
+
+.homePage {
+  display: flex;
+  margin: auto;
+  height: 100%;
+  background-image: url("NY5.jpeg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+}
+
+.homePage h1{
+  color: white;
+  text-align: center;
+  text-shadow: 3px 0 black
+  /*text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;*/
+}
+
+
+
+
+p {
+  font-family: 'Kreon', sans-serif;
+}
+
+
+label {
+  color: white;
+}
+
+.topbar {
+  display: flex;
+  position: fixed;
+
+  flex-flow: row;
+  justify-content: space-between;
+  width: 100%;
+  background-color: #333333;
+  top: 0;
+  left: 0;
+}
+
+.logo {
+  margin-left: 20px;
+  margin-top: 0px;
+}
+
+.logo h2 {
+  font-family: 'Caveat Brush';
+  color: white;
+}
+
+.userLogin{
+  display: flex;
+  flex-flow: row;
+  padding: 20 px;
+
+}
+
+.userLogin > *{
+  margin-left: 5px;
+  margin-right: 15px;
+  margin-top: 25px;
+}
+
+input {
+  padding: 5px;
+  border-radius: 5px;
+  border: black;
+  background-color: white;
+}
+
+input:focus {
+  background-color: white;
+}
+
+button:hover {
+  background-color: #bab7b6;
+  color: black;
+  border-color: #706151;
+}
+
+button {
+  font-family: 'Kreon', sans-serif;
+  background-color: #333333;
+  border-radius: 5px;
+  border-style: solid;
+  border-color: white;
+  border-width: 1px;
+  padding: 5px;
+  margin-top: 0;
+  padding-left:10px;
+  padding-right:10px;
+  font-size: 15px;
+  color: white;
+}
+
+#logout {
+  display: none;
+}
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  padding-top: 60px;
+  transition: 0.5s;
+}
+
+.menu {
+  font-family: 'Caveat Brush';
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 10px;
+  color: white;
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover, .offcanvas a:focus{
+    color: #f1f1f1;
+}
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+
+.dateInput {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  justify-content: space-between;
+}
+
+.dateInput * {
+  margin-top: 10px
+}
+.infoField {
+  margin-top: 20px;
+}
+
+table, th, td {
+  border: 1px solid #ddd;
+}
+th {
+  height: 25px;
+  padding: 10px;
+  text-align: center;
+  color: #451411;
+  background-color: #ffb639;
+}
+td {
+  padding: 10px;
+}
+table {
+  border-collapse:  collapse;
+  width: 100%;
+}
+tr:nth-child(even) {
+  background-color: #c4c0bd;
+}
+
+a {
+  font-family: 'Caveat Brush'
+}
+
+span {
+  font-family: 'Kreon';
+}
+
+.infoField {
+  padding: 15px;
+  width: 500;
+  height: 400px;
+  top:37.5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: auto;
+  display: grid;
+  background-color: #0cb87c;
+  grid-template-columns: 10px 1fr 1fr 1fr 10px;
+  grid-template-rows: repeat(25px);
+  grid-gap: 15px 20px;
+  border-radius: 15px;
+  position: absolute;
+  border: 2px solid black;
+}
+.infoField p {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  font-size: 20px;
+  align-self: stretch;
+  margin: auto;
+
+}
+.infoField button {
+  grid-column-start: 3;
+  grid-column-end: 4;
+}
+#submitButton {
+  top:90%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
+
+.formElement {
+  grid-column-start: 3;
+  grid-column-end: 5;
+  align-self: left;
+
+}
+
+.formElement input:not(.coordinates) {
+  font-size: 15px;
+  padding: 10px;
+  font-family: 'Kreon';
+  font-size: 17px;
+}
+
+.formElement input:not(.coordinates) {
+  width: 90%;
+}
+.coordinates {
+  width: 40%;
+  font-size: 15px;
+  font-family: 'Kreon';
+  font-size: 17px;
+  padding: 10px;
+
+}
+#submitButton {
+  height: 40px;
+  width : 30%;
+  margin: 20px auto;
+  display: block;
+}
+
+#chart_div {
+  width: 100%;
+  height: 80vh;
+  position: static;
+}
+#bar_chart_div {
+  width: 100%;
+  height: 80vh;
+  position: static;
+}
+
+#particles {
+  background-color: #0cb87c;
+  height:100vh;
+  width: 100%;
+}
